@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useRef, useMemo, useCallback } from 'react';
+import useSWR from "swr";
 import { useSearchParams } from 'next/navigation'
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-enterprise";
@@ -34,9 +35,17 @@ const Home = () => {
   const gridRef = useRef();
 
   const searchParams = initialize()
-  // console.log(searchParams)
   const pString = `${searchParams.orgId} ${searchParams.agencyId} ${searchParams.date}`
   console.log(pString)
+
+  const {
+    data: allResultsForOrg,
+    error: allResultsForOrgError,
+    isLoading: allResultsForOrgIsLoading,
+  } = useSWR(`/api/results?orgId=${searchParams.orgId}`);
+  if (!data) {
+    return { isLoading: true }
+  }
 
   const [columnDefs, setColumnDefs] = useState([
     { field: "date", cellRenderer: "agGroupCellRenderer" },
